@@ -1,8 +1,9 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const {
-	getUser,
+	getUserByUsername,
 	createUser,
 	makeMember,
 	makeAdmin,
@@ -12,7 +13,7 @@ const {
 passport.use(
 	new LocalStrategy(async (username, password, done) => {
 		try {
-			const user = await getUser(username);
+			const user = await getUserByUsername(username);
 
 			if (!user) {
 				return done(null, false, {
@@ -51,7 +52,7 @@ const authenticateSignUp = async (req, res, next) => {
 
 const authenticateLogin = async (req, res, next) => {
 	const { username, password } = req.body;
-
+    
 	passport.authenticate("local", {
         successRedirect: "/posts",
         failureRedirect: "/posts"

@@ -1,10 +1,10 @@
 const express = require("express");
-const session = require("express-session");
 
 const indexRouter = require("./routes");
 const signUpRouter = require("./routes/signup");
 const loginRouter = require("./routes/login");
 const postsRouter = require("./routes/posts");
+const userRouter = require("./routes/users");
 
 const app = express();
 const PORT = process.env.port || 3000;
@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/login", loginRouter);
 app.use("/sign-up", signUpRouter);
 app.use("/posts", postsRouter);
+app.use("/users", userRouter);
 app.use("/", indexRouter);
 
 app.use((req, res) => {

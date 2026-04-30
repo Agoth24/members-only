@@ -1,6 +1,13 @@
 const pool = require("./pool");
 
-const getUser = async (username) => {
+const getUserById = async (id) => {
+    const {rows} = await pool.query(`
+        
+        `)
+    return rows[0]
+}
+
+const getUserByUsername = async (username) => {
     const {rows} = await pool.query(`
         
         `)
@@ -40,7 +47,8 @@ const deleteUser = async (id) => {
 };
 
 module.exports = {
-    getUser,
+    getUserById,
+    getUserByUsername,
 	createUser,
     makeMember,
     makeAdmin,

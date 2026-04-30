@@ -30,7 +30,7 @@ const loginSchema = z.object({
 	body: {
 		username: z.coerce
 			.string()
-			.trim.min(1, { message: "Username cannot be empty" })
+			.trim().min(1, { message: "Username cannot be empty" })
 			.max(32, { message: "Max length for usernames is 32 characters" }),
 		password: z.coerce
 			.string()
