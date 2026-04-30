@@ -27,6 +27,9 @@ Send JSON request bodies with:
 Content-Type: application/json
 ```
 
+This API uses session-based auth. In an API client such as Postman, keep cookies
+enabled after logging in so protected routes can read the session.
+
 ### Auth
 
 #### Sign Up
@@ -46,7 +49,20 @@ Request body:
 }
 ```
 
-Creates a new user and returns the created user record.
+Success response:
+
+```json
+{
+  "id": 1,
+  "firstName": "Ada",
+  "lastName": "Lovelace",
+  "username": "ada",
+  "member": false,
+  "admin": false
+}
+```
+
+The password is hashed before storage and is not returned in the response.
 
 #### Log In
 
@@ -68,6 +84,20 @@ Success response:
 ```json
 {
   "message": "Successfully logged in"
+}
+```
+
+Invalid username or password response:
+
+```json
+{
+  "message": "Incorrect password"
+}
+```
+
+```json
+{
+  "message": "Username does not exist"
 }
 ```
 
@@ -109,7 +139,12 @@ Success response:
 
 ```json
 {
-  "message": "Member activated"
+  "id": 1,
+  "firstName": "Ada",
+  "lastName": "Lovelace",
+  "username": "ada",
+  "member": true,
+  "admin": false
 }
 ```
 
@@ -133,7 +168,12 @@ Success response:
 
 ```json
 {
-  "message": "Admin privileges activated"
+  "id": 1,
+  "firstName": "Ada",
+  "lastName": "Lovelace",
+  "username": "ada",
+  "member": true,
+  "admin": true
 }
 ```
 
@@ -145,8 +185,37 @@ Success response:
 GET /posts
 ```
 
-Requires login. Members receive full post information. Non-members receive posts
-without author-identifying fields.
+Requires login.
+
+Non-member success response:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "First post",
+    "content": "This is the message content.",
+    "createdAt": "2026-04-30T18:30:00.000Z"
+  }
+]
+```
+
+Member success response:
+
+```json
+[
+  {
+    "id": 1,
+    "authorId": 1,
+    "firstName": "Ada",
+    "lastName": "Lovelace",
+    "username": "ada",
+    "title": "First post",
+    "content": "This is the message content.",
+    "createdAt": "2026-04-30T18:30:00.000Z"
+  }
+]
+```
 
 #### Create Post
 
@@ -165,7 +234,17 @@ Request body:
 }
 ```
 
-Creates a post using the logged-in user as the author.
+Success response:
+
+```json
+{
+  "id": 1,
+  "authorId": 1,
+  "title": "First post",
+  "content": "This is the message content.",
+  "createdAt": "2026-04-30T18:30:00.000Z"
+}
+```
 
 #### Delete Post
 
@@ -183,11 +262,21 @@ Request body:
 }
 ```
 
-Deletes the post with the matching `id`.
+Success response:
+
+```json
+{
+  "id": 1,
+  "authorId": 1,
+  "title": "First post",
+  "content": "This is the message content.",
+  "createdAt": "2026-04-30T18:30:00.000Z"
+}
+```
 
 ### Errors
 
-Validation errors return this general shape:
+Validation errors return this shape:
 
 ```json
 {
@@ -202,10 +291,49 @@ Validation errors return this general shape:
 }
 ```
 
-Unknown routes return:
+Auth guard errors currently use an `error` field:
+
+```json
+{
+  "error": "Not authenticated"
+}
+```
+
+```json
+{
+  "error": "Not a member"
+}
+```
+
+```json
+{
+  "error": "Forbidden"
+}
+```
+
+Login, passcode, and unknown-route errors currently use a `message` field:
+
+```json
+{
+  "message": "Incorrect password"
+}
+```
+
+```json
+{
+  "message": "Forbidden"
+}
+```
 
 ```json
 {
   "message": "Route doesn't exist. See API Documentation"
 }
+```
+
+If creating or deleting a post does not return a row, the current controllers
+return an empty object with status `500`:
+
+```json
+{}
 ```

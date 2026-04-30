@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const {
 	getUserById,
 	getUserByUsername,
+	getUserPasswordById,
 	createUser,
 	makeMember,
 	makeAdmin,
@@ -32,14 +33,14 @@ passport.use(
 
 			if (!user) {
 				return done(null, false, {
-					message: "Username does not exist",
+					error: "Username does not exist",
 				});
 			}
-
-			const match = await bcrypt.compare(password, user.password);
+			const userPassword = await getUserPasswordById(user.id);
+			const match = await bcrypt.compare(password, userPassword.password);
 
 			if (!match) {
-				return done(null, false, { message: "Incorrect password" });
+				return done(null, false, { error: "Incorrect password" });
 			}
 			return done(null, user);
 		} catch (err) {
@@ -82,7 +83,7 @@ const authenticateSignUp = async (req, res, next) => {
 const authenticateLogin = async (req, res, next) => {
 	passport.authenticate("local", (err, user, info) => {
 		if (err) return next(err);
-		if (!user) return res.status(400).json({ message: info.message });
+		if (!user) return res.status(400).json({ message: info.error });
 		req.logIn(user, (err) => {
 			if (err) return next(err);
 			return res.status(200).json({ message: "Successfully logged in" });
@@ -99,8 +100,8 @@ const logOut = (req, res, next) => {
 
 const makeUserMember = async (req, res, next) => {
 	try {
-		await makeMember(req.user.id);
-		return res.status(200).json({ message: "Member activated" });
+		const member = await makeMember(req.user.id);
+		return res.status(200).json(member);
 	} catch (err) {
 		return next(err);
 	}
@@ -108,8 +109,8 @@ const makeUserMember = async (req, res, next) => {
 
 const makeUserAdmin = async (req, res, next) => {
 	try {
-		await makeAdmin(req.user.id);
-		return res.status(200).json({ message: "Admin privileges activated" });
+		const admin = await makeAdmin(req.user.id);
+		return res.status(200).json(admin);
 	} catch (err) {
 		return next(err);
 	}
@@ -117,12 +118,10 @@ const makeUserAdmin = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
 	try {
-		await deleteUserById(req.user.id);
+		const user = await deleteUserById(req.user.id);
 		req.logOut((err) => {
 			if (err) return next(err);
-			return res
-				.status(200)
-				.json({ message: "Successfully deleted user" });
+			return res.status(200).json(user);
 		});
 	} catch (err) {
 		return next(err);
@@ -132,7 +131,7 @@ const deleteUser = async (req, res, next) => {
 const authenticateMember = async (req, res, next) => {
 	try {
 		if (req.validated.body.passcode !== process.env.MEMBER_PASSCODE) {
-			return res.status(403).json({message: "Forbidden"})
+			return res.status(403).json({ message: "Forbidden" });
 		}
 		next();
 	} catch (err) {
@@ -143,7 +142,7 @@ const authenticateMember = async (req, res, next) => {
 const authenticateAdmin = async (req, res, next) => {
 	try {
 		if (req.validated.body.passcode !== process.env.ADMIN_PASSCODE) {
-            return res.status(403).json({message: "Forbidden"})
+			return res.status(403).json({ message: "Forbidden" });
 		}
 		next();
 	} catch (err) {

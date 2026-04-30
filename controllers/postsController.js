@@ -1,13 +1,16 @@
 const db = require("../db/postQueries");
 
 const getPosts = async (req, res) => {
-	const posts = await db.getAllPosts();
 
 	if (req.user.member) {
-		return res.status(200).json(posts);
+		const fullPosts = await db.getAllFullPosts();
+		return res.status(200).json(fullPosts);
 	}
+    
+	const posts = await db.getAllPosts();
+
 	const anonymousPosts = posts.map((post) => {
-		const { firstName, lastName, username, ...anonymousPost } = post;
+		const { authorId, ...anonymousPost } = post;
 		return anonymousPost;
 	});
 
