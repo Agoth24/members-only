@@ -83,7 +83,12 @@ Success response:
 
 ```json
 {
-  "message": "Successfully logged in"
+  "id": 1,
+  "firstName": "Ada",
+  "lastName": "Lovelace",
+  "username": "ada",
+  "member": false,
+  "admin": false
 }
 ```
 
@@ -91,13 +96,13 @@ Invalid username or password response:
 
 ```json
 {
-  "message": "Incorrect password"
+  "message": "Username does not exist"
 }
 ```
 
 ```json
 {
-  "message": "Username does not exist"
+  "message": "Incorrect password"
 }
 ```
 
