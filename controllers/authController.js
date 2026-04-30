@@ -1,8 +1,8 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const {
+	getUserById,
 	getUserByUsername,
 	createUser,
 	makeMember,
@@ -26,12 +26,26 @@ passport.use(
 			if (!match) {
 				return done(null, false, { message: "Incorrect password" });
 			}
-
 		} catch (err) {
 			return done(err);
 		}
 	}),
 );
+
+passport.serializeUser((user, done) => {
+	done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+	try {
+		let user = getUserById(id);
+		user = user[0];
+
+		return done(null, user);
+	} catch (err) {
+		return done(err);
+	}
+});
 
 const authenticateSignUp = async (req, res, next) => {
 	const { firstName, lastName, username, password } = req.body;
@@ -52,14 +66,22 @@ const authenticateSignUp = async (req, res, next) => {
 
 const authenticateLogin = async (req, res, next) => {
 	const { username, password } = req.body;
-    
+
 	passport.authenticate("local", {
-        successRedirect: "/posts",
-        failureRedirect: "/posts"
-    } );
+		successRedirect: "/posts",
+		failureRedirect: "/posts",
+	});
+};
+
+const authenticateLogOut = (req, res, next) => {
+	req.logOut((err) => {
+		if (err) return next(err);
+		res.redirect("/");
+	});
 };
 
 module.exports = {
 	authenticateSignUp,
 	authenticateLogin,
+	authenticateLogOut,
 };

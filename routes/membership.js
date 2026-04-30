@@ -2,9 +2,9 @@ const {Router} = require("express");
 const validate = require("../validators/validate");
 const { passcodeSchema } = require("../validators/schemas");
 
-const userRouter = Router();
+const memberRouter = Router();
 
-userRouter.post("/", validate(userSc))
+memberRouter.post("/", validate(passcodeSchema))
 
 
-module.exports = userRouter;
+module.exports = memberRouter;

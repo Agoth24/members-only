@@ -1,23 +1,26 @@
 const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
 
-const indexRouter = require("./routes");
-const signUpRouter = require("./routes/signup");
-const loginRouter = require("./routes/login");
+const { signUpRouter, loginRouter, logOutRouter } = require("./routes/auth");
 const postsRouter = require("./routes/posts");
-const userRouter = require("./routes/users");
+const memberRouter = require("./routes/membership");
 
 const app = express();
 const PORT = process.env.port || 3000;
 
-app.use(session());
+app.use(session({secret: "black cat", resave: false, saveUninitialized: false}));
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/login", loginRouter);
 app.use("/sign-up", signUpRouter);
+app.use("/login", loginRouter);
+app.use("/log-out", logOutRouter);
 app.use("/posts", postsRouter);
-app.use("/users", userRouter);
-app.use("/", indexRouter);
+app.use("/member", memberRouter);
+app.use("/", (req, res) => {
+	res.json({ message: "Home" });
+});
 
 app.use((req, res) => {
 	res.status(404).json({
