@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { authenticateSignUp, authenticateLogin, authenticateLogOut } = require("../controllers/authController");
+const { authenticateSignUp, authenticateLogin, logOut } = require("../controllers/authController");
 const validate = require("../validators/validate");
 const { signupSchema, loginSchema } = require("../validators/schemas");
 
@@ -12,6 +12,6 @@ signUpRouter.post("/", validate(signupSchema), authenticateSignUp);
 
 loginRouter.post("/", validate(loginSchema), authenticateLogin);
 
-logOutRouter.get("/", authenticateLogOut);
+logOutRouter.get("/", logOut);
 
 module.exports = { signUpRouter, loginRouter, logOutRouter };

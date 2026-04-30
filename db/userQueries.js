@@ -39,7 +39,7 @@ const makeAdmin = async (id) => {
 
 
 
-const deleteUser = async (id) => {
+const deleteUserById = async (id) => {
 	const { rows } = await pool.query(`
         `);
 
@@ -52,5 +52,5 @@ module.exports = {
 	createUser,
     makeMember,
     makeAdmin,
-    deleteUser
+    deleteUserById
 };

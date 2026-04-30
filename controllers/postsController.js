@@ -1,5 +1,7 @@
-const getPosts = async (req, res) => {
+const db = require("../db/postQueries")
 
+const getPosts = async (req, res) => {
+    
 }
 
 const createPost = async (req, res) => {

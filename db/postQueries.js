@@ -1,6 +1,6 @@
 const pool = require("./pool");
 
-const getPosts = async () => {
+const getAllPosts = async () => {
 	const { rows } = await pool.query(`
         
         `);
@@ -25,7 +25,7 @@ const deletePost = async (id) => {
 };
 
 module.exports = {
-	getPosts,
+	getAllPosts,
 	createPost,
 	deletePost,
 };
