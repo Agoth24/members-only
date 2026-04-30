@@ -128,7 +128,7 @@ const deleteUser = async (req, res, next) => {
 	}
 };
 
-const authenticateMember = async (req, res, next) => {
+const authenticateMemberPasscode = async (req, res, next) => {
 	try {
 		if (req.validated.body.passcode !== process.env.MEMBER_PASSCODE) {
 			return res.status(403).json({ message: "Forbidden" });
@@ -139,11 +139,13 @@ const authenticateMember = async (req, res, next) => {
 	}
 };
 
-const authenticateAdmin = async (req, res, next) => {
+const authenticateAdminPasscode = async (req, res, next) => {
 	try {
+        // check if the passcode is correct
 		if (req.validated.body.passcode !== process.env.ADMIN_PASSCODE) {
 			return res.status(403).json({ message: "Forbidden" });
 		}
+        // if correct, move on
 		next();
 	} catch (err) {
 		return next(err);
@@ -160,6 +162,6 @@ module.exports = {
 	makeUserMember,
 	makeUserAdmin,
 	deleteUser,
-	authenticateMember,
-	authenticateAdmin,
+	authenticateMemberPasscode,
+    authenticateAdminPasscode,
 };

@@ -5,8 +5,8 @@ const {
 	makeUserMember,
 	makeUserAdmin,
 	isMember,
-	authenticateMember,
-	authenticateAdmin,
+	authenticateMemberPasscode,
+	authenticateAdminPasscode,
 } = require("../controllers/authController");
 
 const memberRouter = Router();
@@ -15,7 +15,7 @@ const memberRouter = Router();
 memberRouter.post(
 	"/",
 	validate(passcodeSchema),
-	authenticateMember,
+	authenticateMemberPasscode,
 	makeUserMember,
 );
 
@@ -24,7 +24,7 @@ memberRouter.post(
 	"/admin",
 	isMember,
 	validate(passcodeSchema),
-	authenticateAdmin,
+	authenticateAdminPasscode,
 	makeUserAdmin,
 );
 
