@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
@@ -10,16 +11,23 @@ const { isLoggedIn } = require("./controllers/authController");
 const app = express();
 const PORT = process.env.port || 3000;
 
-app.use(session({secret: "black cat", resave: false, saveUninitialized: false}));
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: false,
+	}),
+);
 app.use(passport.session());
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/sign-up", signUpRouter);
 app.use("/login", loginRouter);
-app.use("/log-out", isLoggedIn,logOutRouter);
+app.use("/log-out", isLoggedIn, logOutRouter);
 app.use("/posts", isLoggedIn, postsRouter);
 app.use("/members", isLoggedIn, memberRouter);
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
 	res.json({ message: "Home" });
 });
 

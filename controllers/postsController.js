@@ -17,8 +17,8 @@ const getPosts = async (req, res) => {
 const createPost = async (req, res) => {
 	const post = await db.createPost({
 		authorId: req.user.id,
-		title: req.body.title,
-		content: req.body.content,
+		title: req.validated.body.title,
+		content: req.validated.body.content,
 		timestamp: new Date(),
 	});
 
@@ -27,7 +27,7 @@ const createPost = async (req, res) => {
 };
 
 const deletePost = async (req, res) => {
-	const post = await db.deletePost(req.params.id);
+	const post = await db.deletePost(req.validated.params.id);
 
 	if (!post) return res.status(500).json({});
 	return res.status(200).json(post);

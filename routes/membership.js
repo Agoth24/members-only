@@ -5,11 +5,27 @@ const {
 	makeUserMember,
 	makeUserAdmin,
 	isMember,
+	authenticateMember,
+	authenticateAdmin,
 } = require("../controllers/authController");
 
 const memberRouter = Router();
 
-memberRouter.post("/", validate(passcodeSchema), makeUserMember);
-memberRouter.post("/admin", isMember, validate(passcodeSchema), makeUserAdmin);
+// Membership authentication
+memberRouter.post(
+	"/",
+	validate(passcodeSchema),
+	authenticateMember,
+	makeUserMember,
+);
+
+// Admin authentication
+memberRouter.post(
+	"/admin",
+	isMember,
+	validate(passcodeSchema),
+	authenticateAdmin,
+	makeUserAdmin,
+);
 
 module.exports = memberRouter;

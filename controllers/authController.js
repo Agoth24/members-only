@@ -62,7 +62,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 const authenticateSignUp = async (req, res, next) => {
-	const { firstName, lastName, username, password } = req.body;
+	const { firstName, lastName, username, password } = req.validated.body;
 
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -121,9 +121,31 @@ const deleteUser = async (req, res, next) => {
 		req.logOut((err) => {
 			if (err) return next(err);
 			return res
-				.status(204)
+				.status(200)
 				.json({ message: "Successfully deleted user" });
 		});
+	} catch (err) {
+		return next(err);
+	}
+};
+
+const authenticateMember = async (req, res, next) => {
+	try {
+		if (req.validated.body.passcode !== process.env.MEMBER_PASSCODE) {
+			return res.status(403).json({message: "Forbidden"})
+		}
+		next();
+	} catch (err) {
+		return next(err);
+	}
+};
+
+const authenticateAdmin = async (req, res, next) => {
+	try {
+		if (req.validated.body.passcode !== process.env.ADMIN_PASSCODE) {
+            return res.status(403).json({message: "Forbidden"})
+		}
+		next();
 	} catch (err) {
 		return next(err);
 	}
@@ -139,4 +161,6 @@ module.exports = {
 	makeUserMember,
 	makeUserAdmin,
 	deleteUser,
+	authenticateMember,
+	authenticateAdmin,
 };

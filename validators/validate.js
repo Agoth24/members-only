@@ -13,7 +13,7 @@ const validate =
 				})),
 			});
 		}
-		req = result.data;
+		req.validated = result.data;
 		next();
 	};
 

@@ -49,7 +49,7 @@ const messageSchema = z.object({
 			.string()
 			.min(1, { message: "Post title cannot be empty" })
 			.max(255, {
-				meessage: "Max length for post titles is 255 characters",
+				message: "Max length for post titles is 255 characters",
 			}),
 		content: z
 			.string()
